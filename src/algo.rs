@@ -1,40 +1,81 @@
-use js_sys::{Array, ArrayBuffer, Int32Array};
+use std::io::{self, BufRead};
+use std::collections::VecDeque;
+use js_sys::Int32Array;
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
-// I can use module system from rust side
-#[wasm_bindgen(js_name = testModule)]
-pub fn test_module(x: i32) -> i32 {
-    x + 3
+static mut VISITED: [i32; 1001] = [1; 1001];
+static mut GRAPH: [[i32; 1001]; 1001] = [[0; 1001]; 1001];
+
+fn input() -> Vec<Vec<i32>> {
+    let stdin = io::stdin();
+    stdin
+        .lock()
+        .lines()
+        .map(|l| {
+            l.unwrap()
+                .split_whitespace()
+                .map(|x| x.parse().unwrap())
+                .collect::<Vec<i32>>()
+        })
+        .collect::<Vec<Vec<i32>>>()
 }
 
-//
-// gets array from javascript
-// should be passed as Int32Array like
-//
-// const array = new Int32Array(...);
-// getSum(array);
-//
-#[wasm_bindgen(js_name = getSum)]
-pub fn get_sum(arr: Int32Array) -> i32 {
-    let arr = arr.to_vec();
-    arr.iter().sum()
-}
-
-#[wasm_bindgen]
-pub fn hi() {
-    // let mut arr = js_sys::ArrayBuffer::new(10_u32);
-
-    let a = web_sys::console::time_with_label("wasm");
-    let mut arr = js_sys::Array::new();
-    for i in 0..100000 {
-        arr.push(&JsValue::from(10_i32));
+unsafe fn dfs(n: usize, node: usize) {
+    console::log_1(&JsValue::from(node));
+    VISITED[node] = 1;
+    for i in 1..=n {
+        if VISITED[i] == 0 && GRAPH[node][i] != 0 {
+            dfs(n, i);
+        }
     }
-    let b = web_sys::console::time_end_with_label("wasm");
+}
 
-    // let greet = JsValue::from_str("Hello this is your first web assembly program");
-    // web_sys::console::log_1(&greet);
-    // web_sys::console::log_1(&JsValue::from_str("[wasm]: "));
+unsafe fn bfs(n: usize, node: usize) {
+    let mut queue = VecDeque::new();
+    VISITED[node] = 1;
+    queue.push_back(node);
 
-    // making empty javascript array
-    // js_sys::Array::new()
+    while queue.len() != 0 {
+        if let Some(next) = queue.pop_front() {
+            console::log_1(&JsValue::from(next));
+
+            for i in 1..=n {
+                if VISITED[i] == 0 && GRAPH[next][i] != 0 {
+                    queue.push_back(i);
+                    VISITED[i] = 1;
+                }
+            }
+        }
+    }
+}
+
+#[wasm_bindgen(js_name = findPath)]
+pub fn find_path(arr: Int32Array) {
+    unsafe{
+        arr.copy_from(&VISITED);
+    }
+}
+
+fn main() {
+    let edges = input();
+    let (n, v) = (edges[0][0], edges[0][2]);
+    unsafe { GRAPH = [[0; 1001]; 1001]; }
+
+    for edge in edges.into_iter().skip(1) {
+        let x = edge[0] as usize;
+        let y = edge[1] as usize;
+        unsafe {
+            GRAPH[x][y] = 1;
+            GRAPH[y][x] = 1;
+        }
+    }
+
+    unsafe {
+        dfs(n as usize, v as usize);
+        println!("");
+        VISITED = [0; 1001];
+        bfs(n as usize, v as usize);
+        println!("");
+    }
 }
