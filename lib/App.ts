@@ -1,3 +1,4 @@
+// this should be in wasm logic
 export const pixelMap = [
   new Array(40).fill(0),
   new Array(40).fill(0),
