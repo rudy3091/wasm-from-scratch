@@ -53,7 +53,7 @@ unsafe fn bfs(n: usize, node: usize) {
 #[wasm_bindgen(js_name = makeArray)]
 pub fn make_array(arr: Int32Array) {
     unsafe {
-        arr.copy_from(&VISITED);
+        arr.copy_from(&[1_i32; 1000000]);
     }
 }
 
