@@ -1,6 +1,6 @@
 use std::io::{self, BufRead};
 use std::collections::VecDeque;
-use js_sys::Int32Array;
+use js_sys::{Int32Array, Uint8Array};
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -55,6 +55,37 @@ pub fn make_array(arr: Int32Array) {
     unsafe {
         arr.copy_from(&[1_i32; 1000000]);
     }
+}
+
+#[wasm_bindgen(js_name = makeUint8array)]
+pub fn make_uint8_array(arr: Uint8Array) {
+    unsafe {
+        arr.copy_from(&[1_u8; 1000000]);
+    }
+}
+
+pub fn make_cell() -> web_sys::Element {
+    let window = web_sys::window().unwrap();
+    let document = window.document().unwrap();
+    let body = document.body().unwrap();
+
+    // Manufacture the element we're gonna append
+    let val = document.create_element("div").unwrap();
+    val.set_class_name("cell");
+    val
+}
+
+#[wasm_bindgen(js_name = makeRow)]
+pub fn make_row(n: i32) -> web_sys::Element {
+    let window = web_sys::window().unwrap();
+    let document = window.document().unwrap();
+    let row = document.create_element("div").unwrap();
+    row.set_class_name("row");
+    row.set_attribute("data-row-idx", "3").unwrap();
+    for i in 1..n {
+        row.append_child(&make_cell());
+    }
+    row
 }
 
 // fn main() {
