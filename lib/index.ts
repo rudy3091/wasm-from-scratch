@@ -4,10 +4,12 @@ import style from "./styles";
 function getTime(f: () => void, iter: number): number {
   let sum = 0;
   for (let i = 0; i < iter; i++) {
-    const start = Date.now();
+    performance.mark('start');
     f();
-    const end = Date.now();
-    sum += end - start;
+    performance.mark('end');
+    const result = performance.measure('time', 'start', 'end');
+    performance.clearMarks();
+    sum += result.duration;
   }
   return sum / iter;
 }
@@ -71,18 +73,18 @@ function start(wasm: typeof import("../pkg")) {
     return row;
   }
 
-  console.log('[wasm]', getTime(() => {
-    wasm.makeRow(10000);
-  }, 100));
+  // console.log('[wasm]', getTime(() => {
+  //   wasm.makeRow(10000);
+  // }, 100));
 
-  console.log('[js]', getTime(() => {
-    makeRow(10000);
-  }, 100));
+  // console.log('[js]', getTime(() => {
+  //   makeRow(10000);
+  // }, 100));
 }
 
 async function load() {
   document.head.innerHTML += style();
-  document.body.appendChild(App(40, 20));
+  document.body.appendChild(App(100, 40));
   start(await import("../pkg"));
 }
 
