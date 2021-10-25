@@ -10,15 +10,11 @@ pub fn add(x: i32, y: i32) -> i32 {
     x + y
 }
 
-#[wasm_bindgen(js_name = sumArray)]
-pub fn sum_array() -> f64 {
-    let mut v: Vec<f64> = Vec::with_capacity(100);
-    for _ in 0..v.capacity() {
-        let x = js_sys::Math::random() * 10.;
-        v.push(x);
-    }
-
-    v.iter().sum()
+#[wasm_bindgen(js_name = sumRandomArray)]
+pub fn sum_random_array(array: js_sys::Int32Array) -> i32 {
+    let mut sum = 0;
+    array.for_each(&mut |x, _, _| { sum += x; });
+    sum
 }
 
 // This is like the `main` function, except for JavaScript.
