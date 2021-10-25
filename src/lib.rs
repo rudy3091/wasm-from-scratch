@@ -5,24 +5,28 @@ pub mod algo;
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
-#[wasm_bindgen]
-pub fn add(x: i32, y: i32) -> i32 {
-    x + y
+pub fn make_cell(idx: i32) -> web_sys::Element {
+    let window = web_sys::window().unwrap();
+    let document = window.document().unwrap();
+
+    // create the element we're gonna append
+    let val = document.create_element("div").unwrap();
+    val.set_class_name("cell");
+    val.set_attribute("data-cell-idx", &idx.to_string()).unwrap();
+    val
 }
 
-#[wasm_bindgen(js_name = sumRandomArray)]
-pub fn sum_random_array(array: js_sys::Int32Array) -> i32 {
-    let mut sum = 0;
-    array.for_each(&mut |x, _, _| { sum += x; });
-    sum
-}
-
-#[wasm_bindgen(js_name = setArrayValue)]
-pub fn set_array_value(array: js_sys::Int32Array) {
-    unsafe {
-        let n = 2;
-        array.copy_from(&[2; 1_000_000]);
-    };
+#[wasm_bindgen(js_name = makeRow)]
+pub fn make_row(idx: i32, n: i32) -> web_sys::Element {
+    let window = web_sys::window().unwrap();
+    let document = window.document().unwrap();
+    let row = document.create_element("div").unwrap();
+    row.set_class_name("row");
+    row.set_attribute("data-row-idx", &idx.to_string()).unwrap();
+    for i in 0..n {
+        row.append_child(&make_cell(i)).unwrap();
+    }
+    row
 }
 
 // This is like the `main` function, except for JavaScript.

@@ -7,19 +7,6 @@ const HEIGHT = 100;
 
 const pixelMap = new Uint8Array(WIDTH * HEIGHT);
 
-function getTime(f: () => void, iter: number): number {
-  let sum = 0;
-  for (let i = 0; i < iter; i++) {
-    performance.mark("start");
-    f();
-    performance.mark("end");
-    const result = performance.measure("time", "start", "end");
-    performance.clearMarks();
-    sum += result.duration;
-  }
-  return sum / iter;
-}
-
 function getIndex(x: number, y: number): number {
   return y + x * WIDTH;
 }
@@ -44,14 +31,12 @@ function setEvent() {
 }
 
 function start(wasm: WasmType) {
-  const wasmTime = getTime(() => {
-    const app = document.querySelector("#app")!;
-    for (let i = 0; i < HEIGHT; i++) {
-      app.appendChild(wasm.makeRow(i, WIDTH));
-    }
-  }, 1);
-
-  console.log("[wasm]", wasmTime, "ms");
+  const app = document.querySelector("#app")!;
+  for (let i = 0; i < HEIGHT; i++) {
+    app.appendChild(wasm.makeRow(i, WIDTH));
+  }
+  console.log("ready");
+  wasm.findPath(pixelMap);
 }
 
 async function load() {
