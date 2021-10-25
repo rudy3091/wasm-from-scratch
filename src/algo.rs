@@ -4,6 +4,9 @@ use js_sys::{Int32Array, Uint8Array};
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
+const WIDTH: usize = 100;
+const HEIGHT: usize = 100;
+
 static mut VISITED: [i32; 1000000] = [1; 1000000];
 static mut GRAPH: [[i32; 1001]; 1001] = [[0; 1001]; 1001];
 
