@@ -4,6 +4,7 @@ function style() {
     html,
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
 
@@ -14,6 +15,18 @@ function style() {
 
     * {
       box-sizing: border-box;
+    }
+
+    #app {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px;
+      border: 2px solid black;
+      border-radius: 4px;
+      background-color: transparent;
+      font-weight: 600;
     }
 
     .row {

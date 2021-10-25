@@ -24,7 +24,7 @@ unsafe fn search(
 
     while queue.len() != 0 {
         if let Some((x, y)) = queue.pop_front() {
-            web_sys::console::log_2(&JsValue::from(x), &JsValue::from(y));
+            // web_sys::console::log_2(&JsValue::from(x), &JsValue::from(y));
 
             for (dx, dy) in MOVES {
                 let nx = x + dx;
@@ -71,5 +71,8 @@ unsafe fn _dfs(
 pub fn find_path(pixel_map: js_sys::Uint8Array) {
     let mut arr = [0_u8; WIDTH * HEIGHT];
     pixel_map.copy_to(&mut arr);
-    unsafe { search(0, 0, &arr); }
+    unsafe {
+        search(0, 0, &arr);
+        VISITED = [0_u8; WIDTH * HEIGHT + 1];
+    }
 }
