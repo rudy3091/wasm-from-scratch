@@ -1,11 +1,9 @@
 import style from "./styles";
+import { WIDTH, HEIGHT, search } from './algo';
 
 type WasmType = typeof import("../pkg");
 
-const WIDTH = 100;
-const HEIGHT = 100;
-
-const pixelMap = new Uint8Array(WIDTH * HEIGHT);
+export const pixelMap = new Uint8Array(WIDTH * HEIGHT);
 
 function getTime(f: () => void, iter: number): number {
   let sum = 0;
@@ -20,7 +18,7 @@ function getTime(f: () => void, iter: number): number {
   return sum / iter;
 }
 
-function getIndex(x: number, y: number): number {
+export function getIndex(x: number, y: number): number {
   return y + x * WIDTH;
 }
 
@@ -48,14 +46,20 @@ function start(wasm: WasmType) {
     }, 1), 'ms');
   });
 
-  for (let i = 0; i < HEIGHT; i++) {
-    app.appendChild(wasm.makeRow(i, WIDTH));
+  for (let i = 0; i < HEIGHT / 10; i++) {
+    app.appendChild(wasm.makeRow(i, WIDTH / 10));
   }
   console.log("ready");
-  const time = getTime(() => {
+
+  const wasmTime = getTime(() => {
     wasm.findPath(pixelMap);
   }, 1);
-  console.log("[wasm]", time, "ms");
+  console.log("[wasm]", wasmTime, "ms");
+
+  const jsTime = getTime(() => {
+    search(0, 0, pixelMap);
+  }, 1);
+  console.log("[js]", jsTime, "ms");
 }
 
 async function load() {

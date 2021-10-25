@@ -2,8 +2,12 @@ use std::collections::VecDeque;
 
 use wasm_bindgen::prelude::*;
 
-const WIDTH: usize = 100;
-const HEIGHT: usize = 100;
+// #[cfg(feature = "wee_alloc")]
+// #[global_allocator]
+// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+const WIDTH: usize = 1000;
+const HEIGHT: usize = 1000;
 
 const MOVES: [(i32, i32); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 
@@ -33,7 +37,7 @@ unsafe fn search(
 
                 let next = get_index(nx, ny);
                 let in_boundary = 0 < next && next < WIDTH * HEIGHT;
-                if in_boundary && VISITED[next] && array[next] != 1 {
+                if in_boundary && !VISITED[next] && array[next] != 1 {
                     queue.push_back((nx, ny));
                     VISITED[next] = true;
                 }
