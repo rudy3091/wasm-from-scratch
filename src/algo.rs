@@ -7,7 +7,7 @@ const HEIGHT: usize = 100;
 
 const MOVES: [(i32, i32); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 
-static mut VISITED: [u8; WIDTH * HEIGHT + 1] = [0; WIDTH * HEIGHT + 1];
+static mut VISITED: [bool; WIDTH * HEIGHT + 1] = [false; WIDTH * HEIGHT + 1];
 
 fn get_index(x: i32, y: i32) -> usize {
     (y + x * WIDTH as i32) as usize
@@ -19,7 +19,7 @@ unsafe fn search(
     array: &[u8; WIDTH * HEIGHT],
 ) {
     let mut queue = VecDeque::new();
-    VISITED[get_index(ix, iy)] = 1_u8;
+    VISITED[get_index(ix, iy)] = true;
     queue.push_back((ix, iy));
 
     while queue.len() != 0 {
@@ -33,9 +33,9 @@ unsafe fn search(
 
                 let next = get_index(nx, ny);
                 let in_boundary = 0 < next && next < WIDTH * HEIGHT;
-                if in_boundary && VISITED[next] == 0 && array[next] != 1 {
+                if in_boundary && VISITED[next] && array[next] != 1 {
                     queue.push_back((nx, ny));
-                    VISITED[next] = 1_u8;
+                    VISITED[next] = true;
                 }
             }
         }
@@ -53,7 +53,7 @@ unsafe fn _dfs(
     }
 
     web_sys::console::log_2(&JsValue::from(x), &JsValue::from(y));
-    VISITED[get_index(x as i32, y as i32)] = 1_u8;
+    VISITED[get_index(x as i32, y as i32)] = true;
 
     for (dx, dy) in MOVES {
         let nx = x + dx;
@@ -61,7 +61,7 @@ unsafe fn _dfs(
 
         let next = get_index(nx, ny);
         let in_boundary = 0 < next && next < WIDTH * HEIGHT;
-        if in_boundary && VISITED[next] == 0 && array[next] != 1 {
+        if in_boundary && VISITED[next] && array[next] != 1 {
             _dfs(x + dx, y + dy, array, path);
         }
     }
@@ -73,6 +73,6 @@ pub fn find_path(pixel_map: js_sys::Uint8Array) {
     pixel_map.copy_to(&mut arr);
     unsafe {
         search(0, 0, &arr);
-        VISITED = [0_u8; WIDTH * HEIGHT + 1];
+        VISITED = [false; WIDTH * HEIGHT + 1];
     }
 }
