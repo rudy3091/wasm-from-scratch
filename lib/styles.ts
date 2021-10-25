@@ -21,10 +21,10 @@ function style() {
     }
 
     .cell {
-      width: 15px;
-      height: 15px;
+      width: 5px;
+      height: 5px;
 
-      border: 1px solid white;
+      // border: 1px solid white;
       background-color: #e5e5e5;
     }
 

@@ -1,15 +1,17 @@
-import App from "./App";
 import style from "./styles";
 
 type WasmType = typeof import("../pkg");
 
+const WIDTH = 200;
+const HEIGHT = 100;
+
 function getTime(f: () => void, iter: number): number {
   let sum = 0;
   for (let i = 0; i < iter; i++) {
-    performance.mark('start');
+    performance.mark("start");
     f();
-    performance.mark('end');
-    const result = performance.measure('time', 'start', 'end');
+    performance.mark("end");
+    const result = performance.measure("time", "start", "end");
     performance.clearMarks();
     sum += result.duration;
   }
@@ -17,12 +19,19 @@ function getTime(f: () => void, iter: number): number {
 }
 
 function start(wasm: WasmType) {
-  console.log("clear");
+  const wasmTime = getTime(() => {
+    const app = document.querySelector("#app")!;
+    for (let i = 0; i < HEIGHT; i++) {
+      app.appendChild(wasm.makeRow(i, WIDTH));
+    }
+  }, 1);
+
+  console.log("[wasm]", wasmTime, "ms");
 }
 
 async function load() {
   document.head.innerHTML += style();
-  document.body.appendChild(App(100, 40));
+  document.body.innerHTML += `<div id="app"></div>`
   start(await import("../pkg"));
 }
 

@@ -17,6 +17,14 @@ pub fn sum_random_array(array: js_sys::Int32Array) -> i32 {
     sum
 }
 
+#[wasm_bindgen(js_name = setArrayValue)]
+pub fn set_array_value(array: js_sys::Int32Array) {
+    unsafe {
+        let n = 2;
+        array.copy_from(&[2; 1_000_000]);
+    };
+}
+
 // This is like the `main` function, except for JavaScript.
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {

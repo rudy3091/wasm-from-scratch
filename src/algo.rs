@@ -64,26 +64,26 @@ pub fn make_uint8_array(arr: Uint8Array) {
     }
 }
 
-pub fn make_cell() -> web_sys::Element {
+pub fn make_cell(idx: i32) -> web_sys::Element {
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
-    let body = document.body().unwrap();
 
-    // Manufacture the element we're gonna append
+    // create the element we're gonna append
     let val = document.create_element("div").unwrap();
     val.set_class_name("cell");
+    val.set_attribute("data-cell-idx", &idx.to_string()).unwrap();
     val
 }
 
 #[wasm_bindgen(js_name = makeRow)]
-pub fn make_row(n: i32) -> web_sys::Element {
+pub fn make_row(idx: i32, n: i32) -> web_sys::Element {
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
     let row = document.create_element("div").unwrap();
     row.set_class_name("row");
-    row.set_attribute("data-row-idx", "3").unwrap();
-    for i in 1..n {
-        row.append_child(&make_cell());
+    row.set_attribute("data-row-idx", &idx.to_string()).unwrap();
+    for i in 0..n {
+        row.append_child(&make_cell(i)).unwrap();
     }
     row
 }
